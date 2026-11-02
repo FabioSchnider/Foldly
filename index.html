@@ -70,9 +70,11 @@ input,select{border-radius:13px}
 .card:hover{transform:translateY(-7px)}
 .thumb{height:205px;position:relative;overflow:hidden;background:
  linear-gradient(135deg,#eee9ff,#fff 55%,#fff7e7)}
-.thumb .thumb-paper{width:120px;height:120px;display:grid;place-items:center;font-size:78px;
+.thumb .thumb-paper{width:100%;height:100%;display:block;object-fit:cover;font-size:78px;
  filter:drop-shadow(8px 12px 7px rgba(20,20,30,.13));transform:rotate(-7deg);transition:.25s}
-.card:hover .thumb .thumb-paper{transform:rotate(4deg) scale(1.08)}
+.card:hover .thumb .thumb-paper{transform:scale(1.035)}
+.thumb .thumb-paper{filter:none;transform:none;transition:transform .25s}
+.modal-icon .result-photo{width:100%;height:100%;object-fit:cover;border-radius:24px;display:block}
 .info{padding:22px}
 .card h3{font-size:21px}
 .meta span:first-child{background:var(--accent2);color:#5a40cf;padding:5px 9px;border-radius:999px}
@@ -297,6 +299,17 @@ function toggleCompleted(name){
   if(activeTutorial===name) updateModalComplete();
 }
 function htmlEscape(x){return String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+const finishedImageMap={
+ "Classic Crane":"classic-crane.jpg", "Jumping Frog":"jumping-frog.jpg", "Dragon":"dragon.jpg",
+ "Butterfly":"butterfly.jpg", "Fox":"fox.jpg", "Lotus Flower":"lotus-flower.jpg", "Paper Boat":"paper-boat.jpg",
+ "Samurai Helmet":"samurai-helmet.jpg", "Lucky Star":"lucky-star.jpg", "Winged Crane — Experienced":"winged-crane-experienced.jpg",
+ "Jumping Frog — Experienced":"jumping-frog-experienced.jpg", "Butterfly — Experienced":"butterfly-experienced.jpg", "Fox — Experienced":"fox-experienced.jpg",
+ "Cyborg Dragon":"cyborg-dragon.jpg", "Wolf":"wolf.jpg", "Phoenix":"phoenix.jpg", "Scorpion":"scorpion.jpg",
+ "Treasure Chest":"treasure-chest.jpg", "Robo-Dinosaur":"robo-dinosaur.jpg", "Cat":"cat.jpg", "Penguin":"penguin.jpg",
+ "Shark":"shark.jpg", "Turtle":"turtle.jpg", "Modular Star":"modular-star.jpg", "Butterfly 2.0":"butterfly-2-0.jpg"
+};
+function finishedImage(t){ return 'images/'+(finishedImageMap[t.name] || 'classic-crane.jpg'); }
+
 function render(){
  const q=search.value.trim().toLowerCase(), d=difficulty.value, c=category.value;
  const filtered=tutorials.filter(t=>
@@ -307,7 +320,7 @@ function render(){
  count.textContent=`${filtered.length} tutorial${filtered.length===1?"":"s"} · ${completed.size} completed`;
  grid.innerHTML=filtered.length?filtered.map(t=>`
  <article class="card ${completed.has(t.name)?"completed":""}">
-   <div class="thumb"><div class="thumb-paper" role="img" aria-label="Finished-model preview: ${htmlEscape(t.name)}">${t.icon}</div></div>
+   <div class="thumb"><img class="thumb-paper" src="${finishedImage(t)}" alt="Finished origami model: ${htmlEscape(t.name)}" loading="lazy"></div>
    <div class="info">
     <div class="meta"><span>${htmlEscape(t.difficulty)}</span><span>${htmlEscape(t.time)}</span></div>
     <h3>${htmlEscape(t.name)} ${completed.has(t.name)?'<span class="done-label">DONE ✓</span>':''}</h3>
@@ -334,7 +347,7 @@ function openModal(name){
  document.getElementById("modalTitle").textContent=t.name+" "+t.icon;
  document.getElementById("modalMeta").textContent=`${t.difficulty} · ${t.time} · ${t.category}`;
  document.getElementById("modalIntro").textContent=t.desc;
- document.getElementById("modalIcon").textContent=t.icon;
+ document.getElementById("modalIcon").innerHTML=`<img class="result-photo" src="${finishedImage(t)}" alt="Finished origami model: ${htmlEscape(t.name)}">`;
  document.getElementById("modalSteps").innerHTML=t.steps.map(s=>`<li>${htmlEscape(s)}</li>`).join("");
  document.getElementById("visualSteps").innerHTML=stepVisualHTML(t);
  document.getElementById("cyborgDiagram").style.display = t.name==="Cyborg Dragon" ? "block" : "none";
